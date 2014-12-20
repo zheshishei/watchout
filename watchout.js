@@ -45,16 +45,41 @@
     for (var i = 0; i < numHeroes; i++) {
       data[i] = 'h' + i;
     }
+
+    var radius = 12.5;
+    var width = this.boardWidth, height = this.boardHeight;
+    // var drag = d3.behavior.drag()
+    // // .origin(function(d) { return d; })
+    // .on("drag", dragmove);
+
     return this.board.selectAll('image')
       .data(data, function(d) { return d; })
       .enter()
       .append('image')
       .attr('class', 'hero')
       .attr('xlink:href', 'asteroid.png')
-      .attr('width', 25).attr('height', 25)
+      .attr('width', radius * 2).attr('height', radius * 2)
       .attr('x', this.boardWidth / 2)
       .attr('y', this.boardHeight / 2)
   };
+ //     .call(drag);
+
+  //   function dragmove(d) {
+  //     console.log('called');
+  //     // debugger;
+  //     d3.select(this)
+  //     .attr("x", Math.max(radius, Math.min(width - radius, d3.event.x)))
+  //     .attr("y", Math.max(radius, Math.min(height - radius, d3.event.y)));
+  //   }
+  // };
+
+Board.prototype.setDrag = function() {
+  var heroElem = document.body.getElementsByClassName("hero")[0];
+  heroElem.onmousedown = function(event) {
+    console.log(event);
+    this.hero.attr("x", event.offsetX).attr("y", event.offsetY);
+  }.bind(this);
+};
 
 Board.prototype.step = function () {
   setInterval(function(){
@@ -118,5 +143,6 @@ Board.prototype.step = function () {
 //   return array;
 // }
 
-var game = new Board(600,600,1,100);
+var game = new Board(600,600,1,10);
+game.setDrag();
 game.step();
