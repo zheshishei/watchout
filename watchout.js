@@ -21,6 +21,7 @@
       .attr('height', height);
     this.hero = this.makeHeroes(numHeroes);
     this.enemies = this.makeEnemies(numEnemies);
+    this.drag();
   }
 
   Board.prototype.makeEnemies = function(numEnemies) {
@@ -73,13 +74,21 @@
   //   }
   // };
 
-Board.prototype.setDrag = function() {
-  var heroElem = document.body.getElementsByClassName("hero")[0];
-  heroElem.onmousedown = function(event) {
-    console.log(event);
-    this.hero.attr("x", event.offsetX).attr("y", event.offsetY);
-  }.bind(this);
-};
+// Board.prototype.setDrag = function() {
+//   var heroElem = document.body.getElementsByClassName("hero")[0];
+//   heroElem.onmousedown = function(event) {
+//     console.log(event);
+//     this.hero.attr("x", event.offsetX).attr("y", event.offsetY);
+//   }.bind(this);
+// };
+
+Board.prototype.drag = function() {
+  var heroElement = document.body.getElementsByClassName("hero")[0];
+    heroElement.onmousedown = function(event){
+      this.setAttribute("x", event.x);
+      this.setAttribute("y", event.y);
+    };
+}
 
 Board.prototype.step = function () {
   setInterval(function(){
@@ -144,5 +153,4 @@ Board.prototype.step = function () {
 // }
 
 var game = new Board(600,600,1,10);
-game.setDrag();
 game.step();
