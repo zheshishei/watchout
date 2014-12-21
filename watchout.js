@@ -12,6 +12,9 @@ var Board = function(width, height, numHeroes, numEnemies) {
     .attr('height', height);
   this.hero = this.makeHeroes(numHeroes);
   this.enemies = this.makeEnemies(numEnemies);
+  this.collisions = 0;
+  this.highscore = 0;
+  this.score = 0;
 }
 
 Board.prototype.makeEnemies = function(numEnemies) {
@@ -30,7 +33,7 @@ Board.prototype.makeEnemies = function(numEnemies) {
     .data(data, function(d) { return d.identity; })
     .enter()
     .append('image')
-    .attr('class', 'enemy')
+    .attr('class', function(d) {return 'enemy ' + d.identity;})
     .attr('xlink:href', 'fred.jpeg')
     .attr('width', 50).attr('height', 50)
     .attr('x', function(d) {return d.x})
@@ -75,31 +78,36 @@ Board.prototype.makeHeroes = function(numHeroes) {
   }
 };
 
-// Board.prototype.collisionChecker = function() {
-//   setInterval(function() {
-//   //collision distance
-//   var collisionDistance =
-
-//   //select all enemies
-//     //for each enemy check x, y
-
-
-
-//   }   ,  10)
-// };
-
 Board.prototype.step = function () {
   setInterval(function(){
     this.enemies.transition()
       .duration(1500)
       .attr('x', function() {return Math.random() * this.boardWidth}.bind(this))
-      .attr('y', function() {return Math.random() * this.boardHeight}.bind(this));
-    console.log(game.enemies);
+      .attr('y', function() {return Math.random() * this.boardHeight}.bind(this))
+      .tween("checker", function(d) {
+        var enemy = d3.select('.' + d.identity);
+        var collided = false;
+        return function collisionChecker() {
+          var enemyX = enemy.attr("x");
+          var enemyY = enemy.attr("y");
+          var heroX = game.hero.attr('x');
+          var heroY = game.hero.attr('y');
+          if( Math.sqrt(Math.abs(Math.pow((enemyX - heroX), 2) + Math.pow((enemyY - heroY), 2))) < d.radius + game.hero.datum().radius ) {
+            collided = true;
+          } else {
+            if (collided) {
+              game.collisions++;
+              d3.select(".collisions span").text(game.collisions);
+              collided = false;
+            }
+          }
+        };
+      });
   }.bind(this), 1000)
 };
 
 
 
-var game = new Board(600,600,1,5);
+var game = new Board(600,600,1,1);
 console.log(game.enemies);
 game.step();
